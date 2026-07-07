@@ -29,6 +29,18 @@ with kdl.dsl; kdl.formats.v1 [
 }
 ```
 
+We also provide `raw` to force generate a raw value, like:
+
+```nix
+with kdl.dsl; kdl.formats.v1 [
+    (n "give me the fucking raw" (raw "just some (raw) strings"))
+]
+```
+
+```kdl
+"give me the fucking raw" just some (raw) strings
+```
+
 ## Usage
 
 ```nix
