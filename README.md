@@ -4,7 +4,32 @@
 
 Better DSL design. Supports both [KDL v1](https://github.com/kdl-org/kdl/blob/main/SPEC_v1.md) and [KDL v2](https://github.com/kdl-org/kdl/blob/main/draft-marchan-kdl2.md).
 
-# Usage
+## Technical Details
+
+A KDL node consists of five parts: type, name, parameters, arguments, and body. The body itself is a collection of KDL nodes. Parameters are key-value pairs.
+
+KDL supports only four types of values: boolean, null, string, and integer. It does not support arrays or hash maps. Therefore, a hash map can safely be treated as parameters, while an array can be treated as the body.
+
+We provide two ways to declare nodes: `n` and `typed`.
+
+```nix
+# typed type name arg1 arg2 ... parameters body
+with kdl.dsl; kdl.formats.v1 [
+    (typed "u8" "some-name" "arg1" 2 3 { key="value"; } [
+        (n "some-untyped-name" "foo" "bar")
+        (n "can also be anything")
+    ])
+]
+```
+
+```kdl
+(u8)some-name "arg1" 2 3 key="value" {
+    some-untyped-name "foo" "bar"
+    "can also be anything"
+}
+```
+
+## Usage
 
 ```nix
 let
@@ -117,3 +142,7 @@ example-keyword null
 (u8)is-a-type null
 ("(strange type name)")"strange key name" null
 ```
+
+## Extra DSLs
+
+see [examples/niri.nix](./examples/niri.nix)
