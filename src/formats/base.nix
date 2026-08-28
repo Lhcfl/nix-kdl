@@ -4,18 +4,15 @@
   mkKeyword,
 }:
 let
-  inherit ((import ../dsl.nix).internal) stop symbols kinds;
+  inherit ((import ../dsl.nix).internal) is-special kinds;
   inherit (import ../utils.nix) pipe;
 
   mkValue' =
     x:
-    if (builtins.typeOf x == "set" && builtins.hasAttr symbols.kind x) then
-      if (x.${symbols.kind} == kinds.raw) then
-        x.data
-      else if (x.${symbols.kind} == kinds.keyword) then
-        mkKeyword x.data
-      else
-        mkValue x
+    if is-special kinds.raw x then
+      x.data
+    else if is-special kinds.keyword x then
+      mkKeyword x.data
     else
       mkValue x;
 
@@ -25,7 +22,6 @@ let
       indented = if indent then x: ("    " + x) else x: x;
     in
     pipe x [
-      (map stop)
       (map mkNode)
       (builtins.concatLists)
       (map indented)

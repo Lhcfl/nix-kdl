@@ -1,32 +1,17 @@
 let
-  symbols = {
-    stop = "__KDL_DSL_STOPMARK";
-    kind = "__KDL_KIND";
-  };
+  KDL_TAG = "__KDL_KIND";
 
   kinds = {
     raw = "kdl-raw";
     keyword = "kdl-keyword";
   };
 
-  stop =
-    x:
-    x {
-      ${symbols.kind} = "stop-mark";
-      ${symbols.stop} = true;
-    };
-
-  continue =
-    initial: f: arg:
-    if (builtins.typeOf arg == "set" && builtins.hasAttr symbols.stop arg) then
-      initial
-    else
-      continue (f initial arg) f;
-
   box = tag: data: {
-    ${symbols.kind} = tag;
+    ${KDL_TAG} = tag;
     data = data;
   };
+
+  is-special = tag: data: (data.${KDL_TAG} or null) == tag;
 
   start =
     {
@@ -36,40 +21,36 @@ let
       parameters ? { },
       body ? null,
     }:
-    continue
-      {
-        inherit
-          name
-          type
-          arguments
-          parameters
-          body
-          ;
-      }
-      (
-        data: x:
-        if builtins.typeOf x == "set" then
-          if (builtins.hasAttr symbols.kind x) then
-            (data // { arguments = data.arguments ++ [ x ]; })
-          else
-            (data // { parameters = data.parameters // x; })
+    {
+      inherit
+        name
+        type
+        arguments
+        parameters
+        body
+        ;
+
+      __functor =
+        self: x:
+        if x ? ${KDL_TAG} then
+          (self // { arguments = self.arguments ++ [ x ]; })
+        else if builtins.typeOf x == "set" then
+          (self // { parameters = self.parameters // x; })
         else if builtins.typeOf x == "list" then
-          (data // { body = x; })
+          (self // { body = x; })
         else
-          (data // { arguments = data.arguments ++ [ x ]; })
-      );
+          (self // { arguments = self.arguments ++ [ x ]; });
+    };
 in
 {
   internal = {
-    inherit stop symbols kinds;
+    inherit is-special kinds;
   };
 
   exports = {
     n = name: start { name = name; };
     typed = type: name: start { inherit type name; };
-
     raw = box kinds.raw;
-
     keywords = {
       inf = box kinds.keyword "inf";
       "-inf" = box kinds.keyword "-inf";
