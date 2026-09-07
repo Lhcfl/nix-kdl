@@ -3,6 +3,7 @@ let
 
   data = with kdl.dsl; [
     (n "spawn-at-startup" "fcitx5" "q" "w" "q")
+    (n "spawn-at-startup" "nix" "eval" "-f" ./2.nix)
     (n "prefer-no-csd")
     (n "workspace-shadow" [
       (n "softness" 40)
