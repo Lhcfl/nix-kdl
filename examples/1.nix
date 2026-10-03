@@ -1,10 +1,18 @@
 let
   kdl = import ../src/kdl.nix;
 
+  lib.mkIf = condition: content: {
+    _type = "if";
+    inherit condition content;
+  };
+
   data = with kdl.dsl; [
     (n "spawn-at-startup" "fcitx5" "q" "w" "q")
     (n "spawn-at-startup" "nix" "eval" "-f" ./2.nix)
     (n "prefer-no-csd")
+    (raw "// This is a comment")
+    (lib.mkIf true (n "conditional-node" "This is a conditional node"))
+    (lib.mkIf false (n "conditional-node" "This node will not be included"))
     (n "workspace-shadow" [
       (n "softness" 40)
       (n "offset" {

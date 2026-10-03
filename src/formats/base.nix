@@ -34,7 +34,7 @@ let
       (map (key: "${mkKey key}=${mkValue' obj.${key}}"))
     ];
 
-  mkNode =
+  mkNode' =
     {
       type,
       name,
@@ -53,5 +53,19 @@ let
       );
     in
     if body == null then [ head ] else [ "${head} {" ] ++ mkBody true body ++ [ "}" ];
+
+  mkNode =
+    x:
+    if x ? name then
+      mkNode' x
+    # support lib.mkIf for conditional nodes
+    else if (x._type or null == "if") then
+      if x.condition then mkNode x.content else [ ]
+    # support raw nodes
+    else if is-special kinds.raw x then
+      [ x.data ]
+    else
+      throw "Invalid node: ${builtins.toJSON x}";
+
 in
 x: builtins.concatStringsSep "\n" (mkBody false x)
