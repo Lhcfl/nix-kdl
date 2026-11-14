@@ -105,7 +105,7 @@ window-rule {
     }
 }
 binds {
-    "Mod+WheelScrollDown" cooldown-ms=150 {
+    Mod+WheelScrollDown cooldown-ms=150 {
         focus-workspace-down
     }
 }
@@ -115,7 +115,7 @@ example-keyword #true
 example-keyword #null
 "strange key"
 "[miao] key"
-"中文" #null
+中文 #null
 "true" #null
 "inf" #null
 "(not)a-type" #null
@@ -137,7 +137,7 @@ window-rule {
     }
 }
 binds {
-    "Mod+WheelScrollDown" cooldown-ms=150 {
+    Mod+WheelScrollDown cooldown-ms=150 {
         focus-workspace-down
     }
 }
@@ -147,7 +147,7 @@ example-keyword true
 example-keyword null
 "strange key"
 "[miao] key"
-"中文" null
+中文 null
 "true" null
 "inf" null
 "(not)a-type" null

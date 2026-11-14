@@ -52,7 +52,9 @@ let
         ++ (mkParameters parameters)
       );
     in
-    if body == null then [ head ] else [ "${head} {" ] ++ mkBody true body ++ [ "}" ];
+    # An empty children list means "no children": emit a plain node instead of an
+    # empty `{}` block, which is what `(n "foo")` already produces.
+    if body == null || body == [ ] then [ head ] else [ "${head} {" ] ++ mkBody true body ++ [ "}" ];
 
   mkNode =
     x:
